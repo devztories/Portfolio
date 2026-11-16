@@ -1,0 +1,26 @@
+{% extends "manage/base.html" %}
+{% load static %}
+{% block content %}
+<section class="dash-head"><div><span class="eyebrow">CONTENT CONTROL CENTER</span><h1>Website <span>dashboard.</span></h1><p>Choose a section, edit only its content, and save it. No code or JSON editing needed.</p></div><div class="dash-actions"><a class="btn ghost" href="{% url 'index' %}" target="_blank">Preview site ↗</a></div></section>
+<div class="dash-stats"><article><small>EDITABLE SECTIONS</small><strong>{{ sections|length }}</strong><span>Content only</span></article><article><small>CONTACT MESSAGES</small><strong>{{ message_count }}</strong><span>Received from website</span></article><article><small>LAST UPDATED</small><strong>{{ updated|date:"d M" }}</strong><span>{{ updated|date:"Y, H:i" }}</span></article></div>
+{% if messages %}{% for message in messages %}<div class="notice {{ message.tags }}">{{ message }}</div>{% endfor %}{% endif %}
+<div class="editor-heading section-picker-heading"><div><h2>Website content</h2><p>Each option has its own editor and save button. Add or remove items wherever needed.</p></div></div>
+<div class="content-section-list">
+{% for section in sections %}
+<details class="content-section" {% if forloop.first %}open{% endif %}>
+  <summary class="content-section-summary"><span class="section-index">0{{ forloop.counter }}</span><span class="section-summary-copy"><strong>{{ section.title }}</strong><small>{{ section.description }}</small></span><span class="section-edit-label">Edit content <b>＋</b></span></summary>
+  <div class="content-section-body">
+    <form method="post" class="content-only-form" data-section="{{ section.key }}">
+      {% csrf_token %}<input type="hidden" name="section" value="{{ section.key }}"><input type="hidden" name="content" class="content-payload">
+      <div class="visual-editor" id="editor-{{ section.key }}"></div>
+      <div class="section-save-row"><span>Only {{ section.title }} will be updated.</span><button class="btn solid" type="submit">Save {{ section.title }} <span>↗</span></button></div>
+    </form>
+    {{ section.content|json_script:section.key|safe }}
+  </div>
+</details>
+{% endfor %}
+</div>
+<section class="messages-panel"><div class="editor-heading"><div><h2>Recent messages</h2><p>Messages sent through your public contact form.</p></div><a class="btn ghost" href="/admin/portfolio/contactmessage/" target="_blank">Manage all ↗</a></div>
+{% for item in latest_messages %}<article class="message-row"><div class="message-avatar">{{ item.name|slice:":1"|upper }}</div><div class="message-main"><strong>{{ item.name }}</strong><a href="mailto:{{ item.email }}">{{ item.email }}</a><p>{{ item.subject }} — {{ item.message|truncatechars:110 }}</p></div><time>{{ item.created|date:"d M Y" }}</time></article>{% empty %}<p class="empty-state">No messages yet. New contact form submissions will appear here.</p>{% endfor %}</section>
+<script src="{% static 'js/content-editor.js' %}"></script>
+{% endblock %}

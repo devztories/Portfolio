@@ -1,0 +1,9 @@
+{% load static %}
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}Portfolio Admin{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/style.css' %}"><link rel="stylesheet" href="{% static 'css/manage.css' %}">
+</head><body class="manage-body"><header class="manage-nav"><a class="manage-brand" href="{% url 'dashboard' %}"><b></b> PORTFOLIO <span>ADMIN</span></a>
+<nav><a href="{% url 'index' %}" target="_blank">View website ↗</a><a href="{% url 'manage-logout' %}">Logout</a></nav></header>
+<main class="manage-wrap">{% block content %}{% endblock %}</main>
+</body></html>

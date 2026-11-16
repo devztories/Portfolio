@@ -1,0 +1,135 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ p.name }} | Python, Django &amp; AI/ML Developer</title>
+<meta name="description" content="{{ p.name }} is a Python, Django and AI/ML developer from {{ p.location }}. {{ p.tagline }}">
+<meta property="og:title" content="{{ p.name }} | Python &amp; Django Developer"><meta property="og:description" content="{{ p.tagline }}"><meta property="og:type" content="website">
+<meta name="theme-color" content="#080808">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23080808'/><circle cx='16' cy='16' r='6' fill='%23ff3030'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<script>try{if(sessionStorage.getItem("introSeen"))document.documentElement.classList.add("skip-intro")}catch(e){}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"{{ p.name|escapejs }}","jobTitle":"Python Developer","address":"{{ p.location|escapejs }}"}</script>
+</head>
+<body>
+<div id="loader" aria-hidden="true"><span>{{ p.name }}</span><i></i></div>
+<a class="skip" href="#main">Skip to content</a>
+
+<header id="nav">
+  <a href="{% url 'profile' %}" class="nav-avatar" aria-label="Profile details">
+    <img src="{% static 'img/profile.png' %}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">
+    <span class="ph" aria-hidden="true">{{ p.name|slice:":1" }}</span>
+  </a>
+</header>
+
+<main id="main">
+<section id="home" class="hero">
+  <canvas id="particles" aria-hidden="true"></canvas><div class="glow g1"></div><div class="glow g2"></div>
+  <div class="wrap">
+    <p class="meta">{{ p.location }}</p>
+    <h1 aria-label="{{ p.name }}"><span class="chars">{{ p.name }}</span></h1>
+    <p class="role"><span id="role" data-roles="{{ p.roles|join:'|' }}">{{ p.roles.0 }}</span><i class="caret"></i></p>
+    <p class="lead">{{ p.intro }}</p>
+    <div class="cta">
+      <a href="#projects" class="btn solid magnetic">{{ p.explore_label|default:"Explore my work" }}</a>
+      <a href="#contact" class="btn ghost magnetic">{{ p.connect_label|default:"Let's connect" }}</a>
+      {% if p.resume %}<a href="{{ p.resume }}" class="btn ghost magnetic" download>Download resume</a>{% endif %}
+    </div>
+    <p class="tag">{{ p.tagline }}</p>
+  </div>
+</section>
+
+<section id="about" class="about">
+  <div class="wrap split">
+    <div class="sticky"><h2>{{ p.about_heading|default:"Code that thinks. Interfaces that feel."|linebreaksbr }}</h2>
+      <p class="muted">{{ p.location }}</p></div>
+    <div>
+      {% for t in about %}<p class="big reveal">{{ t }}</p>{% endfor %}
+      <dl class="stats">{% for s in stats %}<div class="reveal"><dt>{{ s.label }}</dt><dd data-to="{{ s.value }}">{% if s.value %}0{% else %}&mdash;{% endif %}</dd></div>{% endfor %}</dl>
+    </div>
+  </div>
+</section>
+
+<section id="skills" class="skills">
+  <div class="wrap"><h2>{{ p.skills_heading|default:"Tools I work with" }}</h2>
+    <div class="skill-grid">
+    {% for c in skills %}
+      <article class="skill-card spot reveal"><h3><i data-lucide="{{ c.icon }}"></i>{{ c.cat }}</h3>
+        <ul>{% for n, lv in c.items %}<li style="--i:{{ forloop.counter0 }}"><span>{{ n }}</span><em style="--lv:{{ lv }}%"></em></li>{% endfor %}</ul>
+      </article>
+    {% endfor %}</div>
+  </div>
+</section>
+
+<section id="projects" class="projects">
+  <div class="wrap"><h2>{{ p.projects_heading|default:"Selected work" }}</h2>
+    <div class="proj-grid">
+    {% for pr in projects %}
+      <article class="proj tilt reveal" data-id="{{ pr.id }}">
+        <div class="thumb" style="--h:{{ forloop.counter0 }}"><span>{{ pr.title|slice:":2" }}</span></div>
+        <div class="body"><h3>{{ pr.title }}</h3><p>{{ pr.short }}</p>
+          <ul class="tags">{% for t in pr.tags %}<li>{{ t }}</li>{% endfor %}</ul>
+          <div class="acts">
+            {% if pr.live %}<a class="btn mini solid" href="{{ pr.live }}" target="_blank" rel="noopener">Live demo</a>{% endif %}
+            {% if pr.github %}<a class="btn mini ghost" href="{{ pr.github }}" target="_blank" rel="noopener">GitHub</a>{% endif %}
+            <button class="btn mini ghost" data-open="{{ pr.id }}">View details</button>
+          </div></div>
+      </article>
+    {% endfor %}</div>
+  </div>
+</section>
+
+<section id="journey" class="journey">
+  <div class="wrap"><h2>{{ p.journey_heading|default:"Learning journey" }}</h2>
+    <ol class="line"><li class="progress" aria-hidden="true"></li>
+    {% for j in journey %}<li class="reveal"><time>{{ j.period }}</time><h3>{{ j.title }}</h3><p>{{ j.text }}</p></li>{% endfor %}</ol>
+  </div>
+</section>
+
+<section id="services" class="services">
+  <div class="wrap"><h2>{{ p.services_heading|default:"What I can build for you" }}</h2>
+    <div class="svc-grid">{% for t, ic, d in services %}
+      <article class="svc spot reveal"><i data-lucide="{{ ic }}"></i><h3>{{ t }}</h3><p>{{ d }}</p></article>{% endfor %}</div>
+  </div>
+</section>
+
+<section id="contact" class="contact">
+  <div class="wrap split">
+    <div><h2>{{ p.contact_heading|default:"Let's build something." }}</h2>
+      <p class="muted">{{ p.contact_intro|default:"Tell me about your idea, project or opportunity." }}</p>
+      <ul class="links">
+        <li><a href="mailto:{{ p.email }}"><i data-lucide="mail"></i>{{ p.email }}</a></li>
+        {% if p.linkedin %}<li><a href="{{ p.linkedin }}" target="_blank" rel="noopener"><i data-lucide="linkedin"></i>LinkedIn</a></li>{% endif %}
+        {% if p.github %}<li><a href="{{ p.github }}" target="_blank" rel="noopener"><i data-lucide="github"></i>GitHub</a></li>{% endif %}
+        {% if p.instagram %}<li><a href="{{ p.instagram }}" target="_blank" rel="noopener"><i data-lucide="instagram"></i>Instagram</a></li>{% endif %}
+        {% if p.whatsapp %}<li><a href="{{ p.whatsapp }}" target="_blank" rel="noopener"><i data-lucide="message-circle"></i>WhatsApp</a></li>{% endif %}
+      </ul></div>
+    <form id="form" class="glass" novalidate action="{% url 'contact' %}" method="post">
+      <label>Name<input name="name" autocomplete="name" required maxlength="100"><small></small></label>
+      <label>Email<input name="email" type="email" autocomplete="email" required><small></small></label>
+      <label>Subject<input name="subject" required maxlength="150"><small></small></label>
+      <label>Message<textarea name="message" rows="5" required maxlength="3000"></textarea><small></small></label>
+      <input name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <button class="btn solid magnetic" type="submit">{{ p.contact_button|default:"Send message" }}</button>
+      <p class="status" role="status"></p>
+      <div class="done" aria-hidden="true"><svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="24"/><path d="M14 27l8 8 16-17"/></svg><p>Message sent.<br>I'll reply by email.</p></div>
+    </form>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap"><span>&copy; <script>document.write(new Date().getFullYear())</script> {{ p.name }}</span><span>{{ p.location }}</span></div></footer>
+<button id="top" aria-label="Back to top"><i data-lucide="arrow-up"></i></button>
+
+<div id="modal" role="dialog" aria-modal="true" aria-labelledby="m-title" hidden>
+  <div class="sheet"><button class="x" aria-label="Close">&times;</button><div id="m-body"></div></div>
+</div>
+{{ projects|json_script:"projects-data" }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.min.js"></script>
+<script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

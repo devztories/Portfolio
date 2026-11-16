@@ -1,0 +1,5 @@
+{% load static %}<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found</title><link rel="stylesheet" href="{% static 'css/style.css' %}"></head>
+<body class="ready e404"><canvas id="particles" aria-hidden="true"></canvas>
+<main><p class="meta">Error 404</p><h1>Lost in the stack.</h1><p class="lead">This page doesn't exist or has moved.</p><a class="btn solid" href="/">Back to home</a></main>
+<script>(()=>{const c=document.getElementById('particles'),x=c.getContext('2d');let W,H,P=[];const r=()=>{W=c.width=innerWidth;H=c.height=innerHeight};r();addEventListener('resize',r);for(let i=0;i<60;i++)P.push({x:Math.random()*W,y:Math.random()*H,v:.2+Math.random()*.5});(function f(){x.clearRect(0,0,W,H);x.fillStyle='rgba(255,48,48,.7)';P.forEach(p=>{p.y-=p.v;if(p.y<0)p.y=H;x.fillRect(p.x,p.y,2,2)});requestAnimationFrame(f)})()})()</script></body></html>

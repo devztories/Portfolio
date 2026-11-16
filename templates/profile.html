@@ -1,0 +1,37 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ p.name }} | Profile</title><meta name="theme-color" content="#080808">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="ready pf-page">
+<a class="x pf-close" href="{% url 'index' %}" aria-label="Close and go to home">&times;</a>
+<main class="pf-wrap">
+  <div class="avatar">
+    <img src="{% static 'img/profile.png' %}" alt="{{ p.name }}" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">
+    <span class="ph" aria-hidden="true">{{ p.name|slice:":1" }}</span>
+  </div>
+  <div class="pf-details">
+    <p class="meta">{{ p.location }}</p>
+    <h1>{{ p.name }}</h1>
+    <ul class="tags">{% for r in p.roles %}<li>{{ r }}</li>{% endfor %}</ul>
+    <p class="lead">{{ p.intro }}</p>
+    {% for t in about %}<p class="pf-about">{{ t }}</p>{% endfor %}
+    <ul class="links">
+      <li><a href="mailto:{{ p.email }}">{{ p.email }}</a></li>
+      {% if p.linkedin %}<li><a href="{{ p.linkedin }}" target="_blank" rel="noopener">LinkedIn</a></li>{% endif %}
+      {% if p.github %}<li><a href="{{ p.github }}" target="_blank" rel="noopener">GitHub</a></li>{% endif %}
+      {% if p.instagram %}<li><a href="{{ p.instagram }}" target="_blank" rel="noopener">Instagram</a></li>{% endif %}
+      {% if p.whatsapp %}<li><a href="{{ p.whatsapp }}" target="_blank" rel="noopener">WhatsApp</a></li>{% endif %}
+    </ul>
+    <div class="cta">
+      <a class="btn solid" href="{% url 'index' %}#contact">{{ p.connect_label|default:"Let's connect" }}</a>
+      {% if p.resume %}<a class="btn ghost" href="{{ p.resume }}" download>Download resume</a>{% endif %}
+    </div>
+  </div>
+</main>
+</body>
+</html>
