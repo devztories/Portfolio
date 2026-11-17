@@ -15,10 +15,10 @@ body.ready #loader{opacity:0;visibility:hidden}
 #nav{position:absolute;top:calc(14px + var(--nav));right:clamp(16px,3vw,36px);z-index:100}
 .nav-avatar{display:block;width:48px;height:48px;border-radius:50%;padding:2px;background:var(--red);box-shadow:0 0 18px rgba(255,48,48,.5);transition:transform .25s,box-shadow .25s}.nav-avatar:hover{transform:scale(1.08);box-shadow:0 0 28px rgba(255,48,48,.8)}
 .nav-avatar img,.ph{width:100%;height:100%;border-radius:50%;object-fit:cover;background:var(--panel)}.ph{display:none;place-items:center;font:800 1.2rem var(--d)}
-/* profile details page: image left, details on the black side at the right (no overlay) */
-.pf-close.x{position:fixed;top:18px;right:clamp(16px,3vw,36px);z-index:5;display:grid;place-items:center;color:#fff;text-decoration:none;line-height:1}
-.pf-wrap{min-height:100svh;width:min(1100px,100% - 40px);margin-inline:auto;display:grid;grid-template-columns:minmax(220px,340px) 1fr;gap:clamp(28px,6vw,80px);align-items:center;padding:90px 0 60px}
-.avatar{width:100%;aspect-ratio:1;border-radius:50%;padding:6px;background:conic-gradient(from 0deg,var(--red),#4a0b0b,var(--red));box-shadow:0 0 70px rgba(255,48,48,.28)}.avatar .ph{font-size:5rem}
+/* profile details page: photo on the left, all text on the black side at the right (no overlay) */
+.pf-close.x{position:fixed;top:calc(18px + var(--nav));right:clamp(16px,3vw,36px);z-index:5;display:grid;place-items:center;color:#fff;text-decoration:none;line-height:1;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.pf-wrap{min-height:100svh;width:100%;display:grid;grid-template-columns:minmax(300px,min(42vw,560px)) minmax(0,1fr);gap:clamp(28px,5vw,80px);align-items:center;padding:90px clamp(16px,4vw,64px) 60px clamp(16px,3vw,56px)}
+.avatar{width:100%;aspect-ratio:703/873;border-radius:24px;overflow:hidden;background:var(--panel);box-shadow:0 0 70px rgba(255,48,48,.2)}.avatar img{display:block;width:100%;height:100%;object-fit:cover}.avatar .ph{width:100%;height:100%;border-radius:0;font-size:5rem}
 .pf-details{min-width:0}.pf-details h1{font-size:clamp(2.4rem,6vw,4.6rem);line-height:.95;margin:6px 0 16px}.pf-details .tags{margin-bottom:6px}.pf-about{color:var(--mut);margin-bottom:12px;max-width:60ch}
 .pf-details .links{margin:22px 0}.pf-details .cta{margin-top:6px}
 /* buttons */
@@ -80,10 +80,21 @@ footer{border-top:1px solid var(--line);padding:26px 0;color:var(--mut);font-siz
 .x{position:absolute;top:14px;right:16px;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:none;font-size:1.5rem;cursor:pointer}.x:hover{background:var(--red)}
 #m-body h2{font-size:2rem;margin-bottom:8px}#m-body h4{margin:22px 0 8px;font:600 1.05rem var(--d)}#m-body li{color:var(--mut);margin:4px 0 4px 18px;list-style:disc}#m-body p{color:var(--mut)}.shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:16px}.shots img{width:100%;border-radius:12px;border:1px solid var(--line)}
 .e404 main{min-height:100svh;display:grid;place-content:center;justify-items:start;padding:24px;position:relative;gap:12px}.e404 h1{font-size:clamp(2.6rem,10vw,6rem)}.e404 .lead{margin:6px 0 18px}.e404 #particles{position:fixed;z-index:-1}
+/* project rows: desktop keeps the grid (rows are transparent wrappers) */
+.proj-row{display:contents}
+/* profile page on phones: photo fits the screen width, details below */
+@media(max-width:860px){.pf-wrap{grid-template-columns:1fr;gap:26px;align-items:start;padding:0 0 56px}.avatar{border-radius:0 0 24px 24px;box-shadow:none}.pf-details{padding:0 20px}.pf-details .links a{word-break:break-all}}
+/* phones: swipeable rows, each card fits the screen, no arrows */
+@media(max-width:720px){
+.proj-grid{display:grid;grid-template-columns:100%;gap:18px;perspective:none}
+.proj-row,.skill-grid{display:flex;gap:14px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-width:none;padding-bottom:6px}
+.proj-row::-webkit-scrollbar,.skill-grid::-webkit-scrollbar{display:none}
+.proj-row>.proj,.skill-grid>.skill-card{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always}
+}
 /* motion hooks (only hidden when GSAP is present) */
 html.gsap .reveal{opacity:0}
 #cursor{position:fixed;left:0;top:0;width:34px;height:34px;margin:-17px 0 0 -17px;border:1.5px solid var(--red);border-radius:50%;pointer-events:none;z-index:400;opacity:0;transition:width .25s,height .25s,margin .25s,background .25s;mix-blend-mode:screen}
 #cursor.on{opacity:1}#cursor.hov{width:64px;height:64px;margin:-32px 0 0 -32px;background:rgba(255,48,48,.18)}
 @media(hover:hover) and (pointer:fine){body.has-cursor,body.has-cursor a,body.has-cursor button{cursor:none}}
-@media(max-width:860px){.split{grid-template-columns:1fr}.sticky{position:static}.pf-wrap{grid-template-columns:1fr;justify-items:center;text-align:center}.avatar{max-width:260px}.pf-details .tags,.pf-details .cta,.pf-details .links{justify-content:center}.pf-details .links a{justify-content:center}}
+@media(max-width:860px){.split{grid-template-columns:1fr}.sticky{position:static}}
 @media(prefers-reduced-motion:reduce){*,::before,::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
