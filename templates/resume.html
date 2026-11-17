@@ -1,0 +1,49 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ p.name }}</title><link rel="icon" href="data:,"><meta name="theme-color" content="#080808">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<style>
+.rs-bar{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:10px;padding:calc(10px + var(--nav)) clamp(12px,3vw,32px) 10px;background:rgba(8,8,8,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.rs-bar strong{font:800 1.1rem var(--d);margin-right:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rs-bar .x{position:static;flex:none;display:grid;place-items:center;line-height:1}
+#pages{width:min(900px,100% - 24px);margin:20px auto 48px;display:grid;gap:16px}
+#pages canvas{width:100%;height:auto;display:block;background:#fff;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+#state{text-align:center;color:var(--mut);padding:40px 0}
+@media(max-width:520px){.rs-bar strong{display:none}.rs-bar .btn{padding:10px 16px;font-size:.9rem}.rs-bar .x{margin-left:auto}}
+</style>
+</head>
+<body class="ready">
+<header class="rs-bar">
+  <strong>{{ p.name }}</strong>
+  <a class="btn solid" href="{% url 'resume-file' %}?download=1">Download</a>
+  <a class="btn ghost" href="{% url 'resume-file' %}" target="_blank" rel="noopener">Open full</a>
+  <a class="x" href="{% url 'index' %}" aria-label="Close and go to home">&times;</a>
+</header>
+<main>
+  <div id="pages"></div>
+  <p id="state" role="status">Loading resume…</p>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+(async () => {
+  const pages = document.getElementById('pages'), state = document.getElementById('state');
+  const fail = () => { state.innerHTML = 'Preview is not available here. Use <b>Open full</b> or <b>Download</b> above.'; };
+  if (!window.pdfjsLib) return fail();
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  try {
+    const pdf = await pdfjsLib.getDocument('{% url "resume-file" %}').promise;
+    const w = pages.clientWidth, dpr = Math.min(devicePixelRatio || 1, 2);
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i), base = page.getViewport({ scale: 1 }), vp = page.getViewport({ scale: (w / base.width) * dpr });
+      const c = document.createElement('canvas'); c.width = vp.width; c.height = vp.height; pages.appendChild(c);
+      await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+      if (i === 1) state.remove();
+    }
+  } catch (e) { fail(); }
+})();
+</script>
+</body>
+</html>

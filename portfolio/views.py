@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.core.validators import validate_email
-from django.http import JsonResponse
+from django.http import FileResponse, Http404, JsonResponse
 from django.shortcuts import render, redirect
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -24,6 +24,37 @@ def get_site_content():
             skills=content.SKILLS, projects=content.PROJECTS,
             journey=content.JOURNEY, services=content.SERVICES)
     return obj
+
+def fix_url(u, kind=""):
+    """Make links absolute: 'linkedin.com/in/x' -> 'https://linkedin.com/in/x' (otherwise the browser treats it as a path on this site)."""
+    u = (u or "").strip() if isinstance(u, str) else ""
+    if not u: return ""
+    if kind == "whatsapp" and u.lstrip("+").replace(" ", "").replace("-", "").isdigit():
+        d = "".join(ch for ch in u if ch.isdigit())
+        if len(d) == 10: d = "91" + d   # Indian number without country code
+        return "https://wa.me/" + d
+    if u.startswith(("/", "#", "mailto:", "tel:")) or "://" in u: return u
+    return "https://" + u.lstrip("/")
+
+def resume_path():
+    """The resume PDF saved in static/resume/ (first .pdf found), or None."""
+    files = sorted((settings.BASE_DIR / "static" / "resume").glob("*.pdf"))
+    return files[0] if files else None
+
+def fix_profile(p):
+    p = dict(p) if isinstance(p, dict) else {}
+    for k in ("linkedin", "github", "instagram", "whatsapp"):
+        p[k] = fix_url(p.get(k), k)
+    p["resume"] = "/resume/" if resume_path() else fix_url(p.get("resume"))
+    return p
+
+def fix_projects(projects):
+    out = []
+    for pr in projects if isinstance(projects, list) else []:
+        if isinstance(pr, dict):
+            pr = {**pr, "live": fix_url(pr.get("live")), "github": fix_url(pr.get("github"))}
+        out.append(pr)
+    return out
 
 def clean_skills(skills):
     """Admin-entered levels are forced into 0-100 so the bars can never break."""
@@ -43,14 +74,14 @@ def clean_skills(skills):
 @ensure_csrf_cookie
 def index(request):
     obj = get_site_content()
-    context = { "p": obj.profile, "about": obj.about, "stats": obj.stats,
-        "skills": clean_skills(obj.skills), "projects": obj.projects, "journey": obj.journey,
+    context = { "p": fix_profile(obj.profile), "about": obj.about, "stats": obj.stats,
+        "skills": clean_skills(obj.skills), "projects": fix_projects(obj.projects), "journey": obj.journey,
         "services": obj.services }
     return render(request, "index.html", context)
 
 def profile(request):
     obj = get_site_content()
-    return render(request, "profile.html", {"p": obj.profile, "about": obj.about})
+    return render(request, "profile.html", {"p": fix_profile(obj.profile), "about": obj.about})
 
 @require_POST
 def contact(request):
@@ -150,3 +181,14 @@ def dashboard(request):
 def admin_logout(request):
     logout(request)
     return redirect("manage-login")
+
+
+def resume(request):
+    if not resume_path(): raise Http404("No resume uploaded")
+    return render(request, "resume.html", {"p": get_site_content().profile})
+
+def resume_file(request):
+    path = resume_path()
+    if not path: raise Http404("No resume uploaded")
+    return FileResponse(open(path, "rb"), content_type="application/pdf",
+                        as_attachment=request.GET.get("download") == "1", filename="DEVADATHAN_R_Resume.pdf")
