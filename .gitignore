@@ -1,8 +1,10 @@
-.env
-.env.*
-!.env.example
-sqlite_backup.json
+@"
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
+.env
+.venv/
+venv/
 db.sqlite3
-staticfiles/
+media/
+"@ | Out-File -Encoding utf8 .gitignore
